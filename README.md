@@ -1,6 +1,4 @@
-# EcbElixirEuroExchange
-
-**TODO: Add description**
+# Percebex
 
 ## Installation
 
