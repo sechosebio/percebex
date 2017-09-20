@@ -26,7 +26,7 @@ defmodule Percebex do
         
         update_in(map, [:currencies, Access.all(), :value], fn currency_value -> 
           parse_value(currency_value) * value
-          |> Float.round(3)
+          |> Float.ceil(3)
         end)
     end
   end
