@@ -3,6 +3,7 @@ defmodule Percebex do
   Documentation for Percebex.
   """
 
+  alias Percebex.Currency
   alias Percebex.EcbEuroExchange
 
   import SweetXml
@@ -15,43 +16,58 @@ defmodule Percebex do
   ## Examples
     Percebex.get_euro_exchanges()
   """
-  def get_euro_exchanges(value \\ 1) do
-    case transform_api_response() do
-      :error -> :error 
-      map -> 
-        {_, map } = 
-          Map.get_and_update(map, :info, fn current_info -> 
-            {current_info, Map.put(current_info, :value, value)}
-          end)
-        
-        update_in(map, [:currencies, Access.all(), :value], fn currency_value -> 
-          parse_value(currency_value) * value
-          |> Float.ceil(3)
-        end)
+  def get_euro_exchanges(opts \\ []) do
+
+    value = Keyword.get(opts, :value, 1)
+
+    case transform_api_response(value) do
+      :error -> :error
+      map ->
+        map
     end
   end
 
-  defp transform_api_response do
+  defp transform_api_response(value) do
     case EcbEuroExchange.fetch() do
       {:ok, body} ->
-       xmap(body,
-        info: [
-          ~x"/gesmes:Envelope/Cube/Cube",
-          date: ~x"./@time"s
-        ],
-        currencies: [
-          ~x"/gesmes:Envelope/Cube/Cube/Cube"l,
-          name: ~x"./@currency"s,
-          value: ~x"./@rate"s,
-        ]
-       )
+        body
+        |> xpath(~x"/gesmes:Envelope/Cube/Cube")
+        |> create_struct(value)
       {:error, _} -> :error
     end
+  end
+
+  defp create_struct(xml, value) do
+    date = xpath(xml, ~x"./@time"s)
+
+    xml
+    |> xpath(~x"./Cube"l)
+    |> Enum.map(fn node ->
+
+      final_value =
+        node
+        |> xpath(~x"./@rate"s)
+        |> parse_value()
+        |> calculate_final_value(value)
+
+      struct(
+        Currency,
+        %{
+          name: xpath(node, ~x"./@currency"s),
+          value: final_value,
+          date: date
+        }
+      )
+    end)
   end
 
   defp parse_value(value) do
     {number, _} = Float.parse(value)
     number
+  end
+
+  defp calculate_final_value(original_value, value) do
+    Float.ceil(original_value * value, 3)
   end
 
 end

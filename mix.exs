@@ -7,6 +7,7 @@ defmodule Percebex.Mixfile do
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
+      elixirc_paths: elixirc_paths(Mix.env),
       deps: deps()
     ]
   end
@@ -18,11 +19,14 @@ defmodule Percebex.Mixfile do
     ]
   end
 
+  defp elixirc_paths(_), do: ["lib", "web", "test/backends"]
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:httpoison, "~> 0.13"},
-      {:sweet_xml, "~> 0.6"}
+      {:sweet_xml, "~> 0.6"},
+      {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
     ]
   end
 end

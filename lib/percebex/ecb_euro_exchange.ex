@@ -5,7 +5,7 @@ defmodule Percebex.EcbEuroExchange do
 
   @ecb_url "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
   @http Application.get_env(:percebex, :ecb)[:http_client] || HTTPoison
-  
+
   @doc """
   Get the response from European Central Bank API in XML format
 
