@@ -10,8 +10,12 @@ defmodule Percebex do
 
   @doc """
 
-  Get the actual Euro foreign exchange reference rates from ECB API and
+  Get actual Euro foreign exchange reference rates from ECB API and
   parses the xml file received.
+
+  Options:
+  - `value` The amount to exchange.
+  - `currency` The origin currency to do the exchange.
 
   ## Examples
     Percebex.get_euro_exchanges()
@@ -19,11 +23,27 @@ defmodule Percebex do
   def get_euro_exchanges(opts \\ []) do
 
     value = Keyword.get(opts, :value, 1)
+    origin_code = Keyword.get(opts, :currency)
 
     case transform_api_response(value) do
       :error -> :error
-      map ->
-        map
+      currencies ->
+        if origin_code do
+          origin_currency =
+            Enum.find(currencies, fn currency ->
+              currency.name == origin_code
+            end)
+            Enum.map(currencies, &(modify_currency(&1, origin_currency, value)))
+        else
+          Enum.map(currencies, fn currency ->
+            %Currency{
+              name: currency.name,
+              date: currency.date,
+              value: calculate_final_value(currency.value, value)
+            }
+          end)
+        end
+
     end
   end
 
@@ -32,12 +52,12 @@ defmodule Percebex do
       {:ok, body} ->
         body
         |> xpath(~x"/gesmes:Envelope/Cube/Cube")
-        |> create_struct(value)
+        |> create_struct
       {:error, _} -> :error
     end
   end
 
-  defp create_struct(xml, value) do
+  defp create_struct(xml) do
     date = xpath(xml, ~x"./@time"s)
 
     xml
@@ -48,7 +68,6 @@ defmodule Percebex do
         node
         |> xpath(~x"./@rate"s)
         |> parse_value()
-        |> calculate_final_value(value)
 
       struct(
         Currency,
@@ -68,6 +87,22 @@ defmodule Percebex do
 
   defp calculate_final_value(original_value, value) do
     Float.ceil(original_value * value, 3)
+  end
+
+  defp modify_currency(currency, origin_currency, value) do
+    if currency.name == origin_currency.name do
+      %Currency{
+        name: "EUR",
+        date: currency.date,
+        value: calculate_final_value(1/origin_currency.value, value)
+      }
+    else
+      %Currency{
+        name: currency.name,
+        date: currency.date,
+        value: calculate_final_value(1/origin_currency.value * currency.value, value)
+      }
+    end
   end
 
 end
