@@ -25,7 +25,7 @@ defmodule Percebex do
     value = Keyword.get(opts, :value, 1)
     origin_code = Keyword.get(opts, :currency)
 
-    case transform_api_response(value) do
+    case transform_api_response() do
       :error -> :error
       currencies ->
         if origin_code do
@@ -47,7 +47,7 @@ defmodule Percebex do
     end
   end
 
-  defp transform_api_response(value) do
+  defp transform_api_response do
     case EcbEuroExchange.fetch() do
       {:ok, body} ->
         body
