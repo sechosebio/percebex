@@ -24,7 +24,7 @@ defmodule Percebex.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 0.13"},
+      {:httpoison, "~> 1.0"},
       {:sweet_xml, "~> 0.6"},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false}
     ]
