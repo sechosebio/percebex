@@ -3,9 +3,8 @@ defmodule PercebexTest do
   doctest Percebex
 
   test "Make a request to ECB API and parse the XML response then a list with Currency is returned" do
-
-    expected =
-      [%Percebex.Currency{date: "2017-09-20", name: "USD", value: 1.201},
+    expected = [
+      %Percebex.Currency{date: "2017-09-20", name: "USD", value: 1.201},
       %Percebex.Currency{date: "2017-09-20", name: "JPY", value: 133.63},
       %Percebex.Currency{date: "2017-09-20", name: "BGN", value: 1.956},
       %Percebex.Currency{date: "2017-09-20", name: "CZK", value: 26.092},
@@ -35,16 +34,15 @@ defmodule PercebexTest do
       %Percebex.Currency{date: "2017-09-20", name: "PHP", value: 61.117},
       %Percebex.Currency{date: "2017-09-20", name: "SGD", value: 1.613},
       %Percebex.Currency{date: "2017-09-20", name: "THB", value: 39.708},
-      %Percebex.Currency{date: "2017-09-20", name: "ZAR", value: 15.906}]
+      %Percebex.Currency{date: "2017-09-20", name: "ZAR", value: 15.906}
+    ]
 
     assert Percebex.get_euro_exchanges() == expected
-
   end
 
   test "Make a request to ECB API to convert 5 AUD to other currencies then a list with the Currency is returned" do
-
-    expected =
-      [%Percebex.Currency{date: "2017-09-20", name: "USD", value: 4.032},
+    expected = [
+      %Percebex.Currency{date: "2017-09-20", name: "USD", value: 4.032},
       %Percebex.Currency{date: "2017-09-20", name: "JPY", value: 448.694},
       %Percebex.Currency{date: "2017-09-20", name: "BGN", value: 6.568},
       %Percebex.Currency{date: "2017-09-20", name: "CZK", value: 87.607},
@@ -74,10 +72,9 @@ defmodule PercebexTest do
       %Percebex.Currency{date: "2017-09-20", name: "PHP", value: 205.215},
       %Percebex.Currency{date: "2017-09-20", name: "SGD", value: 5.416},
       %Percebex.Currency{date: "2017-09-20", name: "THB", value: 133.326},
-      %Percebex.Currency{date: "2017-09-20", name: "ZAR", value: 53.408}]
+      %Percebex.Currency{date: "2017-09-20", name: "ZAR", value: 53.408}
+    ]
 
-      assert Percebex.get_euro_exchanges([value: 5, currency: "AUD"]) == expected
-
+    assert Percebex.get_euro_exchanges(value: 5, currency: "AUD") == expected
   end
-
 end

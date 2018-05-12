@@ -16,17 +16,16 @@ defmodule Percebex.EcbEuroExchange do
 
   """
   def fetch do
-      @ecb_url
-      |> @http.get()
-      |> handle_response()
+    @ecb_url
+    |> @http.get()
+    |> handle_response()
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
-      {:ok, body}
+    {:ok, body}
   end
 
   defp handle_response({_, %{status_code: _, body: body}}) do
-      {:error, body}
+    {:error, body}
   end
-
 end
