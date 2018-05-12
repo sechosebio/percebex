@@ -10,4 +10,9 @@ defmodule Percebex.Currency do
   @enforce_keys [:name, :value]
   defstruct [:name, :value, :date]
 
+  @type t :: %__MODULE__{
+          name: String.t(),
+          value: number(),
+          date: String.t()
+        }
 end
